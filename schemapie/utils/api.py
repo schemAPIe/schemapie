@@ -1,11 +1,24 @@
 from schemapie.utils.os import display, read, write
 import requests
 
+TYPE_MAP = {
+    'dict': 'Object',
+    'list': 'Array',
+    'str': 'String',
+    'int': 'Integer',
+    'float': 'Number',
+    'bool': 'Boolean',
+    'NoneType': 'Null',
+}
+
+def get_type(object: any):
+    return TYPE_MAP.get(type(object).__name__)
+
 def flatten(data: dict | list, path: str = "", meta: dict = {}):
     """Flattens each object in the API response into a dictionary object containing {path: details}."""
     if isinstance(data, dict):
         for k, v in data.items():
-            meta[f"{path}{k}"] = {"path": f"{path}{k}" if path else k, "type": type(v).__name__}
+            meta[f"{path}{k}"] = {"path": f"{path}{k}" if path else k, "type": get_type(v)}
             if isinstance(v, (dict, list)):
                 flatten(data=v, path=f"{path}{k}.", meta=meta)
             else:
@@ -13,6 +26,10 @@ def flatten(data: dict | list, path: str = "", meta: dict = {}):
 
     elif isinstance(data, list):
         for v in data:
+            if isinstance(v, (dict, list)):
+                meta[f"{path[:-1]}"].update({"type": f"{get_type(data)}[{get_type(v)}]"})
+            else: 
+                meta[f"{path[:-1]}"].update({"type": f"{get_type(data)}[{get_type(v)}]", "example": [v]})
             flatten(data=v, path=path, meta=meta)
 
     return meta
