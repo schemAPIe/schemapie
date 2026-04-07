@@ -21,8 +21,6 @@ EOF
 echo "For user safety, the schemAPIe installation script will not automatically install dependencies. This script will instead inform you of any missing dependencies that you will need to manually install."
 echo "Installing schemapie from GitHub..."
 
-exit 1
-
 deps=true
 
 # Check for python
