@@ -55,7 +55,7 @@ def build(schema: dict, path: list, value: dict):
 
         if i == len(path) - 1:
             if value.get("examples"):
-                value["examples"] = list(value["examples"])
+                value["examples"] = list(set(current[p].get("examples", [])) | value["examples"])
             current[p].update(value)
         else:
             current[p].setdefault("children", {})
